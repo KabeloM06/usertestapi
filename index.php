@@ -61,7 +61,7 @@ switch($method){
 
     case "PUT":
         $user = json_decode(file_get_contents('php://input')); //so we can read the data in JSON
-        $sql = "UPDATE `react-crud` SET name= :name, email =:email, mobile =:mobile, updated_at =:updated_at WHERE `react-crud`.`id` =:id";
+        $sql = "UPDATE `react-crud` SET `name` =:name, `email` =:email, `mobile` =:mobile, `updated_at` =:updated_at WHERE `react-crud`.`id` =:id";
         $stmt = $conn->prepare($sql);
         $updated_at = date('Y-m-d');
         
@@ -77,6 +77,22 @@ switch($method){
             $response = ['status' => 0, 'message' => 'Failed to update user.'];
         }
         echo json_encode($response);
-        break;    
+        break; 
+        
+    case "DELETE":
+        $sql = "DELETE FROM `react-crud` WHERE id = :id";
+        $path = explode('/', $_SERVER['REQUEST_URI']);
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id', $path[3]);
+
+        if($stmt->execute()){
+            $response = ['status' => 1, 'message' => 'Redord deleted successfully.'];
+        } else {
+            $response = ['status' => 0, 'message' => 'Failed to delete record.'];
+        }
+
+        echo json_encode($response);
+        break;
 }
 
